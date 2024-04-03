@@ -47,7 +47,7 @@ app.use("/users", authenticationCheck, userRouter);
 // app.use("/songs", authenticationCheck, songRouter);
 
 app.get("/", (req, res) => {
-  res.send("Home router");
+  res.send("Run on Vercel");
 });
 
 app.post("/login", async (req, res) => {
@@ -90,6 +90,6 @@ app.put("/update", async (req, res) => {
   const { username, password } = res.body;
 });
 
-app.listen(3000);
+app.listen(8000);
 console.log("Server running");
 module.exports = app;
