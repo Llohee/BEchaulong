@@ -26,11 +26,10 @@ const authenticationCheck = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, "123@lol");
-    const { username } = decoded;
+    const { email } = decoded;
     // Check user co trong co so du lieu khong
-    const user = await userModel
-      .findOne({ username: username })
-      // .populate("songs");
+    const user = await userModel.findOne({ email: email });
+    // .populate("songs");
     if (user) {
       req.user = user;
       next();
@@ -51,12 +50,12 @@ app.get("/", (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   //check trong db
-  const user = await userModel.findOne({ username });
+  const user = await userModel.findOne({ email });
   //nếu có user thì trả token , còn không thì trả lỗi
   if (user && bcrypt.compareSync(password, user.password)) {
-    const accesstoken = jwt.sign({ username: username }, "123@lol");
+    const accesstoken = jwt.sign({ email: email }, "123@lol");
     // Tra token cho client
     res.send({ token: accesstoken });
   } else {
@@ -65,11 +64,11 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-  // check trùng username trong db
-  const existringUser = await userModel.findOne({ username });
+  const { email, password } = req.body;
+  // check trùng email trong db
+  const existringUser = await userModel.findOne({ email });
   // nếu trùng thì không cho tạo , nếu không trùng thì tạo user
-  // tim user có usename == req.body.username
+  // tim user có usename == req.body.email
   // nếu tồn tại thì res.send('user da ton tại )
   // nếu ko thì create
   if (existringUser) {
@@ -78,7 +77,7 @@ app.post("/register", async (req, res) => {
     const salt = bcrypt.genSaltSync(10);
     const hashPassword = bcrypt.hashSync(password, salt);
     const user = await userModel.create({
-      username,
+      email,
       password: hashPassword,
       role: ["admin"],
     });
@@ -87,7 +86,7 @@ app.post("/register", async (req, res) => {
 });
 
 app.put("/update", async (req, res) => {
-  const { username, password } = res.body;
+  const { email, password } = res.body;
 });
 
 app.listen(8000);
