@@ -41,18 +41,18 @@ userRouter.get('/', authorizationCheck, async (req, res) => {
 })
 
 // Update role cua user
-userRouter.patch('/:username', authorizationCheck, async (req, res) => {
+userRouter.patch('/:email', authorizationCheck, async (req, res) => {
     const { role, song } = req.body
-    const username = req.params.username
+    const email = req.params.email
     // Tim xem co user khong findOne
-    const user = await userModel.findOne({ username })
+    const user = await userModel.findOne({ email })
     // Neu co thi xoa
     if (user) {
         // Update role cho user nay updateOne
-        // await userModel.updateOne({username}, {role})
-        // const user = await userModel.findOne({username})
-        // const user = await userModel.findOneAndUpdate({username}, {role}, {new: true})
-        const user = await userModel.findOneAndUpdate({ username }, { $push: { songs: song } }, { new: true })
+        // await userModel.updateOne({email}, {role})
+        // const user = await userModel.findOne({email})
+        // const user = await userModel.findOneAndUpdate({email}, {role}, {new: true})
+        const user = await userModel.findOneAndUpdate({ email }, { $push: { songs: song } }, { new: true })
         // Gui lai user duoc update cho client
         res.send(user)
     } else {
@@ -64,20 +64,20 @@ userRouter.post('/create', authorizationCheck, async () => {
 
 })
 
-userRouter.delete('/:username', authorizationCheck, async (req, res) => {
-    // Lay username tu params
-    const username = req.params.username
-    // Check xem username co phai cua user hien tai khong?
+userRouter.delete('/:email', authorizationCheck, async (req, res) => {
+    // Lay email tu params
+    const email = req.params.email
+    // Check xem email co phai cua user hien tai khong?
     const currentUser = req.user
-    if (currentUser.username === username) {
+    if (currentUser.email === email) {
         res.status(400).send('Khong the xoa user nay')
         return
     }
-    // Tim xem user co trong db khong?? userModel.findOne({username})
-    const user = await userModel.findOne({ username })
+    // Tim xem user co trong db khong?? userModel.findOne({email})
+    const user = await userModel.findOne({ email })
     // Neu co thi xoa
     if (user) {
-        await userModel.deleteOne({ username })
+        await userModel.deleteOne({ email })
         res.send('Da xoa,')
     } else {
         res.send('Khong co user')
