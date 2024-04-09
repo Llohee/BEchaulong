@@ -11,7 +11,7 @@ const app = express();
 
 // mongoose.connect('mongodb://0.0.0.0:27017/mindx')
 mongoose.connect(
-  "mongodb+srv://long:ngchaulong@cluster0.duee8k1.mongodb.net/mindx"
+  "mongodb+srv://nggiang141:Agera141@cluster0.ozq4c25.mongodb.net/"
 );
 
 app.use(express.json());
