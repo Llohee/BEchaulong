@@ -89,6 +89,6 @@ app.put("/update", async (req, res) => {
   const { email, password } = res.body;
 });
 
-app.listen(8000);
+app.listen(8000, ()=> console.log("Run on port 8000"));
 console.log("Server running");
 module.exports = app;
