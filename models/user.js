@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+  fullname: String,
   email: String,
   password: String,
+  phone: String,
+  created_time: String,
+  users_submit: [String],
   role: [String],
-  songs: [{ type: mongoose.Schema.Types.ObjectId, ref: "songs" }],
 });
 
 const userModel = mongoose.model("users", userSchema);
