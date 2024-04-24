@@ -57,7 +57,7 @@ app.post("/login", async (req, res) => {
     const accesstoken = jwt.sign({ email: email }, "123@lol");
     res.send({ token: accesstoken });
   } else {
-    res.status(401).json({ message: "Email hoặc mật khẩu không đúng." }); 
+    res.status(401).json({ message: "Email hoặc mật khẩu không đúng." });
   }
 });
 
@@ -65,8 +65,7 @@ app.post("/register", async (req, res) => {
   const { fullname, email, password, phone } = req.body;
   const existringUser = await userModel.findOne({ email });
   if (existringUser) {
-    res.send("user ton tại");
-    res.status(401).json({ message: "Học sinh đã tồn tại" });
+    res.status(401).json({ message: "Học sinh đã tồn tại!" });
   } else {
     const salt = bcrypt.genSaltSync(10);
     const hashPassword = bcrypt.hashSync(password, salt);

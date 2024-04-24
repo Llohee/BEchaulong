@@ -121,15 +121,16 @@ userRouter.get("/role", (req, res) => {
 });
 
 userRouter.post("/create", authorizationCheck, async (req, res) => {
-  const { fullname, email, password, phone } = req.body;
+  const { fullname, birthday, email, password, phone } = req.body;
   const existringUser = await userModel.findOne({ email });
   if (existringUser) {
-    res.send("user ton tại");
+    res.status(401).json({ message: "Học sinh đã tồn tại" });
   } else {
     const salt = bcrypt.genSaltSync(10);
     const hashPassword = bcrypt.hashSync(password, salt);
     const user = await userModel.create({
       fullname,
+      birthday,
       email,
       password: hashPassword,
       phone,
