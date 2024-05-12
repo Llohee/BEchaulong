@@ -1,22 +1,12 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { userModel } = require("../models/user");
+const { userModel } = require("../../models/user");
 const multer = require("multer");
-
+const {authorizationCheck} = require("./author")
 const upload = multer({ dest: "uploads/" });
 
 const userRouter = express.Router();
-
-const authorizationCheck = (req, res, next) => {
-  const userRoles = req.user.role;
-  console.log(userRoles);
-  if (userRoles.includes("admin")) {
-    next();
-  } else {
-    res.send("User không có quyền");
-  }
-};
 
 userRouter.get("/", authorizationCheck, async (req, res) => {
   try {
@@ -32,42 +22,8 @@ userRouter.get("/me", (req, res) => {
   res.send(req.user);
 });
 
-userRouter.get("/", authorizationCheck, async (req, res) => {
-  const users = await userModel.find({});
-  const user = req.user;
-});
 
-userRouter.put("/:id", authorizationCheck, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { fullname, email, password, phone } = req.body;
 
-    const updatedUser = await userModel.findOneAndUpdate(
-      { _id: id },
-      {
-        $set: {
-          fullname: fullname,
-          email: email,
-          password: password,
-          phone: phone,
-        },
-      },
-      { new: true }
-    );
-
-    if (updatedUser) {
-      console.log(`User ${id} updated successfully.`);
-      console.log(`New data: `, updatedUser);
-      res.send(updatedUser);
-    } else {
-      console.log(`User with ID ${id} not found.`);
-      res.status(404).send("User not found");
-    }
-  } catch (error) {
-    console.log("Error during record update: ", error);
-    res.status(500).send("Error during record update");
-  }
-});
 userRouter.put("/:id", authorizationCheck, async (req, res) => {
   try {
     const { id } = req.params;
@@ -94,17 +50,6 @@ userRouter.put("/:id", authorizationCheck, async (req, res) => {
   }
 });
 
-userRouter.patch("/:email", authorizationCheck, async (req, res) => {
-  const { role, song } = req.body;
-  const email = req.params.email;
-  const user = await userModel.findOne({ email });
-  if (user) {
-    const updatedUser = await userModel.findOneAndUpdate({ email });
-    res.send(updatedUser);
-  } else {
-    res.send("Không có người dùng");
-  }
-});
 userRouter.get("/users", authorizationCheck, async (req, res) => {
   try {
     const users = await userModel.find({});
