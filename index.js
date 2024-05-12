@@ -1,11 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const { userRouter } = require("./routes/user");
+const { userRouter } = require("./routes/user/user");
 const jwt = require("jsonwebtoken");
 const { users, userModel } = require("./models/user");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
+const { teamRouter } = require("./routes/team/team");
 
 const app = express();
 
@@ -20,11 +21,6 @@ db.on("connected", () => {
 
 app.use(express.json());
 app.use(cors());
-
-// app.options('*', (req, res) => {
-//     res.header({ 'Access-Control-Allow-Origin': '*' })
-//     res.sendStatus(204)
-// })
 
 const authenticationCheck = async (req, res, next) => {
   try {
@@ -45,6 +41,7 @@ const authenticationCheck = async (req, res, next) => {
 };
 
 app.use("/users", authenticationCheck, userRouter);
+app.use("/teams", authenticationCheck, teamRouter);
 
 app.get("/", (req, res) => {
   res.send("Run on Vercel");
@@ -57,32 +54,8 @@ app.post("/login", async (req, res) => {
     const accesstoken = jwt.sign({ email: email }, "123@lol");
     res.send({ token: accesstoken });
   } else {
-    res.status(401).json({ message: "Email hoặc mật khẩu không đúng." }); 
+    res.status(401).json({ message: "Email hoặc mật khẩu không đúng." });
   }
-});
-
-app.post("/register", async (req, res) => {
-  const { fullname, email, password, phone } = req.body;
-  const existringUser = await userModel.findOne({ email });
-  if (existringUser) {
-    res.send("user ton tại");
-    res.status(401).json({ message: "Học sinh đã tồn tại" });
-  } else {
-    const salt = bcrypt.genSaltSync(10);
-    const hashPassword = bcrypt.hashSync(password, salt);
-    const user = await userModel.create({
-      fullname,
-      email,
-      password: hashPassword,
-      phone,
-      role: ["stu"],
-    });
-    res.send(user);
-  }
-});
-
-app.put("/update", async (req, res) => {
-  const { email, password } = res.body;
 });
 
 app.listen(8000, () => console.log("Run on port 8000"));
