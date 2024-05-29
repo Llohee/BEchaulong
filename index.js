@@ -7,6 +7,7 @@ const { users, userModel } = require("./models/user");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const { teamRouter } = require("./routes/team/team");
+const { assignmentRouter } = require("./routes/team/assignment");
 
 const app = express();
 
@@ -42,6 +43,7 @@ const authenticationCheck = async (req, res, next) => {
 
 app.use("/users", authenticationCheck, userRouter);
 app.use("/teams", authenticationCheck, teamRouter);
+app.use("/teams", authenticationCheck, assignmentRouter);
 
 app.get("/", (req, res) => {
   res.send("Run on Vercel");
