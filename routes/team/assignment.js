@@ -107,7 +107,7 @@ assignmentRouter.post(
         user: userId,
         description,
         image,
-        score,
+        score: null,
         submitted_time: new Date(),
       };
 
