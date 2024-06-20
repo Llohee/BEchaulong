@@ -2,37 +2,47 @@ const express = require("express");
 const { teamModel } = require("../../models/team");
 const multer = require("multer");
 const { userModel } = require("../../models/user");
-const upload = multer({ dest: "uploads/" });
+const upload = multer({
+  storage: multer.memoryStorage(),
+});
 
 const assignmentRouter = express.Router();
 //create Assignment
-assignmentRouter.post("/:teamId/add-homework", async (req, res) => {
+assignmentRouter.post("/:teamId/add-homework", upload.single('image'), async (req, res) => {
   try {
     const { teamId } = req.params;
-    const { name, description, start_time, end_time, image } = req.body;
+    const { name, description, start_time, end_time } = req.body;
+
+    // Convert teamId to a string and validate it
+    const teamIdString = String(teamId);
+
+    // Validate required fields
     if (!name || !start_time || !end_time) {
       return res.status(400).json({ error: "All fields are required" });
     }
-    const team = await teamModel.findById(teamId);
+
+    // Find the team
+    const team = await teamModel.findById(teamIdString);
     if (!team) {
       return res.status(404).json({ error: "Team not found" });
     }
+
+    // Create new homework
     const newHomework = {
       name,
       description,
       start_time: new Date(start_time),
       end_time: new Date(end_time),
-      image,
-      is_active:
-        new Date(start_time) <= new Date() && new Date() <= new Date(end_time)
-          ? "true"
-          : "false",
+      image: req.file ? req.file.buffer.toString('base64') : undefined,
+      is_active: new Date(start_time) <= new Date() && new Date() <= new Date(end_time) ? "true" : "false",
     };
+
+    // Add homework to the team
     team.homework.push(newHomework);
     await team.save();
-    res
-      .status(200)
-      .json({ message: "Homework added to team successfully", team });
+
+    // Send response
+    res.status(200).json({ message: "Homework added to team successfully", team });
   } catch (error) {
     console.error("Error adding homework to team:", error);
     res.status(500).json({ error: "Internal server error" });
