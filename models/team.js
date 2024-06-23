@@ -6,6 +6,7 @@ const submittedUserSchema = new mongoose.Schema({
   description: { type: String, required: false },
   image: { type: String },
   score: { type: Number },
+  comment: {type: String},
   submitted_time: { type: Date, required: true },
 });
 
