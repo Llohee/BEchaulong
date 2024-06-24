@@ -68,7 +68,7 @@ teamRouter.post("/:teamId/add-users", async (req, res) => {
       team.users.push(userId);
     }
     await team.save();
-    res.status(200).json({ message: "Users added to team successfully" });
+    res.status(200).json({ message: "Đã thêm thành công thành viên" });
   } catch (error) {
     console.error("Error adding users to team:", error);
     res.status(500).json({ error: "Internal server error" });
