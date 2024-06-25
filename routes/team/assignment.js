@@ -190,6 +190,8 @@ assignmentRouter.get("/:teamId/submissions/:userId", async (req, res) => {
         submissions.push({
           homeworkId: homework._id,
           homeworkName: homework.name,
+          start_time: homework.start_time,
+          end_time:homework.end_time,
           description: submittedUser.description,
           image: submittedUser.image,
           comment: submittedUser.comment,
