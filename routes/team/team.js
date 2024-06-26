@@ -19,8 +19,8 @@ teamRouter.get("/", async (req, res) => {
 teamRouter.post("/create", async (req, res) => {
   try {
     const { name, description } = req.body;
-    const createdBy = req.user;
-    console.log(req.user);
+    const createdBy = req.user; // Assuming req.user contains the ID of the creator
+
     const existingTeam = await teamModel.findOne({ name });
     if (existingTeam) {
       return res.status(400).json({ error: "Team name already exists" });
@@ -28,10 +28,13 @@ teamRouter.post("/create", async (req, res) => {
     if (!name) {
       return res.status(400).json({ error: "Name is required" });
     }
+
+    // Create new team
     const team = await teamModel.create({
       name,
       description,
       created_by: createdBy,
+      users: [createdBy], // Add the creator to the users array
     });
 
     res.status(201).json(team);
