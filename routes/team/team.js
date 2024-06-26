@@ -8,10 +8,10 @@ const teamRouter = express.Router();
 
 teamRouter.get("/", async (req, res) => {
   try {
-    const teams = await teamModel.find({});
+    const teams = await teamModel.find({}).select("_id name");
     res.send(teams);
   } catch (error) {
-    res.send("Error");
+    res.status(500).send("Error");
     console.log(error);
   }
 });

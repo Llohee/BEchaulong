@@ -49,13 +49,33 @@ assignmentRouter.post(
 assignmentRouter.get("/:teamId/active-homeworks", async (req, res) => {
   try {
     const { teamId } = req.params;
-    const team = await teamModel.findById(teamId);
+
+    // Find the team by teamId
+    const team = await teamModel
+      .findById(teamId)
+      .lean()
+      .populate("homework.submitted_users.user", "username");
+
     if (!team) {
       return res.status(404).json({ error: "Team not found" });
     }
-    const activeHomeworks = team.homework.filter(
-      (hw) => hw.is_active === "true"
-    );
+
+    // Filter active homeworks
+    const activeHomeworks = team.homework.filter((hw) => {
+      // Check if homework is active
+      if (hw.is_active === "true") {
+        // Check if any user in submitted_users array matches current user (assuming user ID is obtained from authentication)
+        const hasSubmitted = hw.submitted_users.some((submittedUser) => {
+          return submittedUser.user._id.toString() === req.user._id.toString(); // Adjust as per your authentication/user structure
+        });
+
+        // If user has not submitted, include the homework in activeHomeworks
+        return !hasSubmitted;
+      } else {
+        return false; // Exclude inactive homeworks
+      }
+    });
+
     res.status(200).json({ activeHomeworks });
   } catch (error) {
     console.error("Error fetching active homeworks:", error);
@@ -191,7 +211,7 @@ assignmentRouter.get("/:teamId/submissions/:userId", async (req, res) => {
           homeworkId: homework._id,
           homeworkName: homework.name,
           start_time: homework.start_time,
-          end_time:homework.end_time,
+          end_time: homework.end_time,
           description: submittedUser.description,
           image: submittedUser.image,
           comment: submittedUser.comment,
@@ -340,9 +360,7 @@ assignmentRouter.put(
       submission.score = score;
       submission.comment = comment;
       await team.save();
-      res
-        .status(200)
-        .json({ message: "Chấm điểm thành công", submission });
+      res.status(200).json({ message: "Chấm điểm thành công", submission });
     } catch (error) {
       console.error("Error updating submission score:", error);
       res.status(500).json({ error: "Internal server error" });
