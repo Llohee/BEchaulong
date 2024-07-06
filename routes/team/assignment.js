@@ -16,9 +16,9 @@ assignmentRouter.post(
       const { teamId } = req.params;
       const { name, description, start_time, end_time } = req.body;
       const teamIdString = String(teamId);
-      if (!name || !start_time || !end_time) {
-        return res.status(400).json({ error: "All fields are required" });
-      }
+      // if (!name || !start_time || !end_time) {
+      //   return res.status(400).json({ error: "All fields are required" });
+      // }
       const team = await teamModel.findById(teamIdString);
       if (!team) {
         return res.status(404).json({ error: "Team not found" });
@@ -45,6 +45,7 @@ assignmentRouter.post(
     }
   }
 );
+
 //get active Assigment
 assignmentRouter.get("/:teamId/active-homeworks", async (req, res) => {
   try {
